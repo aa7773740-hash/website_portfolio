@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jad Al-Nami</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root { --yellow: #FFC107; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      color: white;
+      background: url('assets/wmremove-transformed.jpeg') center/cover fixed no-repeat;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+    
+    /* Blur layer */
+    .bg-blur {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 100vw;
+      height: 100vh;
+      background: url('assets/Background image.jpeg') center/cover fixed no-repeat;
+      background-attachment: fixed;
+      filter: blur(10);
+      transition: filter 1s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1;
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(1.1);
+      transform-origin: center center;
+    }
+    body.scrolled .bg-blur {
+      filter: blur(30px);
+    }
+    
+    /* Content above blur */
+    main { position: relative; z-index: 2; }
+    
+    /* Open to work */
+    .open-to-work {
+      position: relative;
+      top: 20px; 
+      left: 20px;
+      padding: 15px 40px;
+      border-radius: 30px;
+      font-size: 18px;
+      display: flex; 
+      align-items: center; 
+      gap: 10px;
+      z-index: 10;
+    }
+    .glow {
+      width: 11px; 
+      height: 11px;
+      background: #0f0;
+      border-radius: 50%;
+      box-shadow: 0 0 12px #0f0;
+      animation: glow 3s infinite;
+    }
+    @keyframes glow { 
+      0%,100% {opacity:0.6; transform:scale(1)} 
+      50% {opacity:1; transform:scale(1.4)} 
+    }
+    
+    /* Download CV - Fixed to stay in one line */
+    .download-cv {
+      position: fixed;
+      top: 25px; 
+      right: 20px;
+      background: var(--yellow);
+      color: #000;
+      font-weight: bold;
+      padding: 10px 20px;
+      border-radius: 80px;
+      text-decoration: none;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      min-width: 160px;
+      height: 35px;
+      transition: background 0.4s ease;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .download-cv .cv-text,
+    .download-cv .arrow-icon {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      transition: all 0.5s cubic-bezier(0.76, 0, 0.24, 1);
+      white-space: nowrap;
+    }
+
+    .download-cv .cv-text {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+
+    .download-cv .arrow-icon {
+      font-size: 24px;
+      opacity: 0;
+      transform: translate(-50%, -50%) translateY(-30px);
+    }
+
+    .download-cv:hover .cv-text {
+      opacity: 0;
+      transform: translate(-50%, -50%) translateY(30px);
+    }
+
+    .download-cv:hover .arrow-icon {
+      opacity: 1;
+      transform: translate(-50%, -50%) translateY(0);
+    }
+    
+    /* Bottom navigation - Fixed for mobile */
+    .bottom-nav {
+      position: fixed;
+      bottom: 20px; 
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(85, 80, 80, 0.671);
+      backdrop-filter: blur(23px);
+      border-radius: 40px;
+      padding: 7px 10px;
+      display: flex; 
+      gap: 5px;
+      z-index: 9;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      overflow: hidden;
+      max-width: 95vw;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    
+    .bottom-nav::-webkit-scrollbar {
+      display: none;
+    }
+    
+    /* New active indicator for smooth transition */
+    .nav-active-indicator {
+      position: absolute;
+      background: white;
+      border-radius: 40px;
+      height: calc(100% - 14px);
+      top: 7px;
+      left: 7px;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 0;
+    }
+    
+    .bottom-nav a {
+      color: #f8efef;
+      text-decoration: none;
+      font-size: 12px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 5px;
+      padding: 8px 12px;
+      border-radius: 40px;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .bottom-nav a.active {
+      color: #111;
+      font-weight: bold;
+    }
+    .bottom-nav a.active i { color: var(--yellow); }
+    
+    /* Sections */
+    section {
+      min-height: 100vh;
+      padding: 80px 5%;
+      display: flex;
+      align-items: center;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    /* Home Section - Fixed contact info layout */
+    h1 { 
+      font-size: clamp(40px, 8vw, 65px); 
+      font-weight: 1000; 
+      line-height: 1; 
+      margin-bottom: 40px;
+      padding-left: 0;
+      text-align: left;
+    }
+    
+    .title { 
+      padding-left: 0;
+      font-size: clamp(18px, 4vw, 23px); 
+      font-weight: 1000; 
+      color: var(--yellow); 
+      margin-bottom: 15px; 
+      text-align: left;
+    }
+    
+    .contact-info { 
+      margin-top: 40px; 
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .contact-info a {
+      padding-left: 0;
+      color: white; 
+      text-decoration: none; 
+      font-size: clamp(16px, 4vw, 23px);
+      display: flex; 
+      align-items: center; 
+      gap: 15px;
+      text-align: left;
+    }
+    
+    .reveal {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 1s ease;
+    }
+    .reveal.active { opacity: 1; transform: translateY(0); }
+    
+    /* Summary Section - All text aligned left */
+    .section-title {
+      font-size: clamp(35px, 8vw, 50px);
+      font-weight: 800;
+      color: var(--yellow);
+      margin-bottom: 30px;
+      padding-left: 0;
+      text-align: left;
+    }
+
+    .quote-container {
+      margin: 40px 0 60px 0;
+      padding-left: 5%;
+      border-left: 6px solid var(--yellow);
+      max-width: 100%;
+      text-align: left;
+    }
+
+    .quote-container blockquote {
+      font-size: clamp(20px, 5vw, 28px);
+      font-weight: 800;
+      line-height: 1.3;
+      color: white;
+      margin: 0;
+      font-family: Georgia, serif;
+      font-style: italic;
+      text-align: left;
+    }
+
+    .quote-container cite {
+      display: block;
+      margin-top: 20px;
+      font-size: clamp(14px, 3vw, 17px);
+      color: var(--yellow);
+      font-style: normal;
+      font-weight: bold;
+      text-align: left;
+    }
+
+    .summary-text {
+      padding-left: 0;
+      max-width: 100%;
+      font-size: clamp(16px, 3vw, 18px);
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.95);
+      text-align: left;
+    }
+
+    .summary-text p {
+      margin-bottom: 25px;
+    }
+    
+    /* Work Experience Section - All text aligned left */
+    h2 {
+      font-size: clamp(45px, 9vw, 70px);
+      font-weight: 800;
+      color: var(--yellow);
+      margin-bottom: 30px;
+      padding-left: 0;
+      text-align: left;
+    }   
+
+    .job {
+      padding-left: 0;
+      max-width: 100%;
+      margin-bottom: 30px;
+      position: relative;
+      text-align: left;
+    }
+
+    .job-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 15px;
+      text-align: left;
+    }
+
+    /* Yellow glowing dot for job title */
+    .job-title {
+      position: relative;
+      padding-left: 30px !important;
+      font-size: clamp(18px, 4vw, 22px);
+      font-weight: 600;
+      color: white;
+      margin: 0;
+      text-align: left;
+    }
+    .job-title::before {
+      content: "";
+      width: 11px;
+      height: 11px;
+      background: var(--yellow);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--yellow);
+      animation: yellow-glow 3s infinite;
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    @keyframes yellow-glow { 
+      0%,100% {opacity:0.6; transform:translateY(-50%) scale(1)} 
+      50% {opacity:1; transform:translateY(-50%) scale(1.4)} 
+    }
+
+    /* Border line for work experience section */
+    .job-border-container {
+      position: relative;
+      padding-left: 30px !important;
+      margin-left: 4px;
+      text-align: left;
+    }
+    .job-border-container::before {
+      content: "";
+      position: absolute;
+      left: 10px;
+      top: 0;
+      bottom: 0;
+      width: 1.5px;
+      background: rgba(255, 255, 255, 0.719);
+    }
+
+    .job-date {
+      font-size: clamp(18px, 4vw, 22px);
+      color: white;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    .job-company {
+      font-size: clamp(22px, 5vw, 30px);
+      color: var(--yellow);
+      margin: 1px 0 20px 0;
+      font-weight: bold;
+      text-align: left;
+    }
+
+    .job-description {
+      list-style: none;
+      padding-left: 0;
+      font-size: clamp(16px, 3vw, 18px);
+      line-height: 1.7;
+      color: rgba(255,255,255,0.92);
+      text-align: left;
+    }
+    
+    .job-description li {
+      position: relative;
+      padding-left: 25px;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+    
+    .job-description li::before {
+      content: "—";
+      color: var(--yellow);
+      position: absolute;
+      left: 0;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .job-points {
+      padding-top: 25px;
+      text-align: left;
+    }
+
+    /* Selected Projects */
+    .projects-title {
+      font-size: clamp(24px, 5vw, 33px);
+      color: var(--yellow);
+      margin: 20px 0 25px 0;
+      font-weight: bold;
+      text-align: left;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      max-width: 100%;
+      padding: 0;
+      text-align: left;
+    }
+
+    .project-card {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      overflow: hidden;
+      transition: all 0.4s ease;
+      backdrop-filter: blur(10px);
+      text-decoration: none;
+      text-align: left;
+    }
+
+    .project-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+    }
+
+    .project-image {
+      width: 100%;
+      height: 180px;
+      overflow: hidden;
+    }
+
+    .project-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .project-card:hover .project-image img {
+      transform: scale(1.1);
+    }
+
+    .project-info {
+      padding: 20px;
+      color: rgb(255, 255, 255);
+      text-align: left;
+    }
+
+    .project-info h4 {
+      font-size: clamp(20px, 4vw, 27px);
+      margin: 0 0 8px;
+      font-weight: 800;
+      text-align: left;
+    }
+
+    .project-info p {
+      font-size: clamp(15px, 3vw, 17px);
+      opacity: 0.9;
+      margin: 0;
+      text-align: left;
+    }
+    
+    /* Skills & Tools Section */
+    .soft-skills {
+      padding-left: 0;
+      margin: 30px 0 40px;
+      list-style: none;
+      font-size: clamp(16px, 3vw, 19px);
+      line-height: 1.1;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px 30px;
+      align-items: start;
+      text-align: left;
+    }
+
+    .soft-skills li {
+      position: relative;
+      padding-left: 35px;
+      break-inside: avoid;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      text-align: left;
+    }
+
+    .soft-skills li::before {
+      content: "•";
+      color: var(--yellow);
+      position: absolute;
+      left: 0;
+      font-size: 35px;
+      top: 50%;
+      transform: translateY(-50%);
+      line-height: 1;
+    }
+
+    /* Tech Logos */
+    .tech-logos {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px 30px;
+      justify-items: center;
+      max-width: 100%;
+      margin: 0 auto 60px;
+      padding: 0;
+      text-align: center;
+    }
+
+    .logo-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      color: white;
+      font-weight: bold;
+      font-size: clamp(13px, 3vw, 15px);
+      text-align: center;
+    }
+
+    .logo-item img {
+      width: 40px;
+      height: 40px;
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.4));
+      transition: transform 0.3s ease;
+    }
+
+    .logo-item:hover img {
+      transform: translateY(-5px) scale(1.1);
+    }
+
+    /* Languages & Education */
+    .subsection-title {
+      font-size: clamp(30px, 6vw, 43px);
+      font-weight: 700;
+      color: var(--yellow);
+      margin: 60px 0 30px 0;
+      text-align: left;
+    }
+
+    .languages {
+      padding-left: 0;
+      max-width: 100%;
+      margin-bottom: 50px;
+      text-align: left;
+    }
+
+    .lang {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .lang span {
+      display: block;
+      font-size: clamp(16px, 3vw, 20px);
+      font-weight: bold;
+      color: white;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+
+    .bar {
+      height: 8px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    /* Fix for exact percentage bars - Responsive */
+    .bar .fill {
+      height: 100%;
+      background: var(--yellow);
+      border-radius: 10px;
+      width: 0;                    /* start hidden */
+      animation: none;             /* disable the old animation */
+      transition: width 1.8s cubic-bezier(0.65, 0, 0.35, 1);
+      max-width: 100%;             /* ensure it doesn't overflow on small screens */
+    }
+
+    /* Trigger the correct width when section becomes visible */
+    .reveal.active .bar .fill {
+      animation: fillBar 1.5s ease forwards;
+    }
+
+    @keyframes fillBar {
+      to { 
+        width: var(--target-width, 100%); /* Use CSS variable with fallback */
+      }
+    }
+
+    .education {
+      padding-left: 0;
+      max-width: 100%;
+      text-align: left;
+    }
+
+    .edu-item {
+      margin-bottom: 30px;
+      text-align: left;
+    }
+
+    .edu-item h4 {
+      font-size: clamp(20px, 4vw, 25px);
+      color: var(--yellow);
+      margin-bottom: 9px;
+      font-weight: bold;
+      text-align: left;
+    }
+
+    .degree {
+      font-size: clamp(16px, 3vw, 20px);
+      color: white;
+      margin: 10px 0;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    .thesis {
+      font-size: clamp(15px, 3vw, 17px);
+      color: rgba(255,255,255,0.92);
+      line-height: 1.7;
+      max-width: 100%;
+      text-align: left;
+    }
+
+    /* Projects Section */
+    .project-entry {
+      margin-bottom: 80px;
+      padding-left: 0;
+      position: relative;
+      text-align: left;
+    }
+
+    .project-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 15px;
+      text-align: left;
+    }
+
+    /* Yellow glowing dot for project titles */
+    .project-header h3 {
+      position: relative;
+      padding-left: 30px !important;
+      font-size: clamp(20px, 4vw, 28px);
+      font-weight: 600;
+      color: white;
+      margin: 0;
+      line-height: 1.1;
+      text-align: left;
+    }
+    .project-header h3::before {
+      content: "";
+      width: 11px;
+      height: 11px;
+      background: var(--yellow);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--yellow);
+      animation: yellow-glow 3s infinite;
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .project-year {
+      font-size: clamp(22px, 4vw, 30px);
+      color: rgb(255, 255, 255);
+      font-weight: 600;
+      text-align: left;
+    }
+
+    .project-content {
+      display: flex;
+      gap: 40px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      text-align: left;
+    }
+
+    /* Border line for project sections */
+    .project-text {
+      flex: 1;
+      min-width: 100%;
+      max-width: 100%;
+      font-size: clamp(16px, 3vw, 18px);
+      line-height: 1.7;
+      color: rgba(255,255,255,0.95);
+      position: relative;
+      padding-left: 30px !important;
+      margin-left: 4px;
+      text-align: left;
+    }
+    .project-text::before {
+      content: "";
+      position: absolute;
+      left: 10px;
+      top: 0;
+      bottom: 0;
+      width: 1.5px;
+      background: rgba(255, 255, 255, 0.719);
+    }
+
+    .subheading {
+      color: var(--yellow);
+      font-size: clamp(18px, 4vw, 23px);
+      font-weight: bold;
+      margin: 25px 0 10px 0;
+      text-align: left;
+    }
+
+    /* Project Cards (clickable PDFs) */
+    .project-card-link {
+      text-decoration: none;
+      flex-shrink: 0;
+      width: 100%;
+      margin-top: 30px;
+      text-align: left;
+    }
+
+    .project-card-1 {
+      width: 100%;
+      height: 400px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+      transition: all 0.4s ease;
+      position: relative;
+    }
+
+    .project-card-1:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    }
+
+    .airbnb-card {
+      background: url(assets/Airbnb\ pic.jpeg);
+    }
+
+    .gym-card {
+      background: url(assets/Gym\ project\ pic.jpeg);
+    }
+
+    .card-inner {
+      padding: 30px 25px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: white;
+      text-align: left;
+    }
+
+    .card-title {
+      font-size: clamp(24px, 5vw, 32px);
+      font-weight: 900;
+      line-height: 1.2;
+      text-align: left;
+    }
+
+    .card-author {
+      font-size: clamp(14px, 3vw, 17px);
+      opacity: 0.8;
+      margin: 15px 0 25px;
+      text-align: left;
+    }
+
+    .card-label {
+      background: var(--yellow);
+      color: black;
+      align-self: flex-start;
+      padding: 6px 12px;
+      border-radius: 30px;
+      font-weight: bold;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .card-repo {
+      margin-top: 15px;
+      font-size: 14px;
+      opacity: 0.9;
+      text-align: left;
+    }
+
+    /* Footer */
+    .final-footer {
+      padding: 80px 0 40px;
+      margin-top: 60px;
+      text-align: left;
+    }
+
+    .footer-grid {
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    /* GitHub + LinkedIn */
+    .social-row {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      text-align: left;
+    }
+
+    .footer-icon img {
+      width: 45px;
+      height: 45px;
+      filter: brightness(0) invert(1);
+      transition: transform 0.3s ease;
+    }
+
+    .footer-icon:hover img {
+      transform: translateY(-5px);
+    }
+
+    /* Official LinkedIn Logo */
+    .linkedin-btn {
+      width: 45px;
+      height: 45px;
+      background: #0d559c;
+      color: white;
+      font-family: system-ui, sans-serif;
+      font-size: 30px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(10,102,194,0.3);
+    }
+
+    .linkedin-btn:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(10,102,194,0.4);
+      background: #004182;
+    }
+
+    /* Email & Phone */
+    .contact-row {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      font-size: clamp(18px, 4vw, 23px);
+      font-weight: 500;
+      text-align: left;
+    }
+
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: white;
+      text-decoration: none;
+      transition: color 0.3s ease;
+      text-align: left;
+    }
+
+    .contact-link i {
+      width: 35px;
+      height: 35px;
+      background: transparent;
+      color: var(--yellow);
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.4s ease;
+    }
+
+    .contact-link:hover {
+      color: var(--yellow) !important;
+    }
+
+    .contact-link:hover i {
+      background: var(--yellow);
+      color: black;
+      transform: scale(1.1);
+    }
+
+    /* Fix for mobile navigation - show all 5 sections */
+    @media (max-width: 479px) {
+      .bottom-nav {
+        gap: 3px;
+        padding: 7px 8px;
+      }
+      
+      .bottom-nav a {
+        font-size: 11px;
+        padding: 8px 10px;
+        gap: 4px;
+      }
+      
+      .bottom-nav a i {
+        font-size: 10px;
+      }
+      
+      .nav-active-indicator {
+        height: calc(100% - 14px);
+        top: 7px;
+        left: 7px;
+      }
+    }
+
+    /* For very small screens */
+    @media (max-width: 360px) {
+      .bottom-nav {
+        gap: 2px;
+        padding: 6px 6px;
+      }
+      
+      .bottom-nav a {
+        font-size: 10px;
+        padding: 7px 8px;
+        gap: 3px;
+      }
+      
+      .bottom-nav a i {
+        font-size: 9px;
+      }
+    }
+
+    /* Responsive Breakpoints */
+    @media (min-width: 480px) {
+      .soft-skills {
+        grid-template-columns: 1fr 1fr;
+      }
+      
+      .tech-logos {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      
+      .bottom-nav a {
+        font-size: 13px;
+        padding: 10px 15px;
+      }
+    }
+    
+    @media (min-width: 768px) {
+      section {
+        padding: 100px 8%;
+      }
+      
+      .open-to-work {
+        padding: 18px 60px;
+      }
+      
+      .download-cv {
+        right: 50px;
+      }
+      
+      .bottom-nav {
+        gap: 20px;
+        padding: 7px 20px;
+      }
+      
+      .bottom-nav a {
+        font-size: 14px;
+        padding: 10px 20px;
+      }
+      
+      .project-content {
+        flex-wrap: nowrap;
+      }
+      
+      .project-text {
+        min-width: 300px;
+      }
+      
+      .project-card-link {
+        width: auto;
+        margin-top: 0;
+      }
+      
+      .project-card-1 {
+        width: 320px;
+        height: 450px;
+      }
+      
+      .tech-logos {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      
+      /* Contact info layout for desktop */
+      .contact-info {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 40px;
+        row-gap: 30px;
+      }
+      
+      .contact-info a {
+        flex: 0 1 calc(50% - 20px);
+      }
+    }
+    
+    @media (min-width: 1024px) {
+      section {
+        padding: 100px 10%;
+      }
+      
+      .project-card-1 {
+        width: 360px;
+        height: 500px;
+      }
+      
+      .bottom-nav {
+        gap: 40px;
+      }
+      
+      .bottom-nav a {
+        font-size: 14px;
+        padding: 13px 20px;
+      }
+      
+      /* Contact info layout for larger screens */
+      .contact-info a {
+        flex: 0 1 auto;
+      }
+    }
+    
+    @media (min-width: 1200px) {
+      .container {
+        max-width: 1200px;
+      }
+      
+      .bottom-nav {
+        gap: 70px;
+      }
+    }
+    
+    @media (min-width: 1600px) {
+      section {
+        padding: 120px 15%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-blur"></div>
+  <div class="open-to-work"><div class="glow"></div>Open to work</div>
+  <a href="assets/Resume-Al-Nami.pdf" target="_blank" class="download-cv">
+  <span class="cv-text">Download CV</span>
+  <i class="fas fa-arrow-down arrow-icon"></i>
+  </a>
+    <main>
+        <section id="home">
+            <div class="container reveal">
+            <p class="title">FULLSTACK DEVELOPER & IT SUPPORT</p>
+            <h1>Jad Al-Nami</h1>
+                <div class="contact-info">
+                    <a href="mailto:g.alnami@yahoo.com">
+                    <i class="fas fa-envelope" style="color:var(--yellow); font-size:23px; margin-right:12px;"></i>g.alnami@yahoo.com</a>
+                    <a href="tel:+49017661976859">
+                    <i class="fas fa-phone-alt" style="color:var(--yellow); font-size:23px; margin-right:5px;"></i>+49 (0) 1766-197-6859</a>
+                    <a href="https://www.linkedin.com/in/gehad-al-nami-0b3b3b1b1" target="_blank">
+                    <i class="fab fa-linkedin-in" style="color:var(--yellow); font-size:24px; margin-right:10px;"></i>Gehad (Jad) Al-Nami</a>
+                    <a href="#">
+                    <i class="fas fa-map-marker-alt" style="color:var(--yellow); font-size:24px; margin-right:10px;"></i>Warstein, DE</a>
+                </div>
+            </div>
+        </section>
+    <!-- Add your other sections below exactly like this -->
+    <section id="summary">
+        <div class="container reveal">
+        <h2 class="section-title">Summary</h2>
+
+    <!-- Your actual summary text -->
+    <div class="summary-text">
+        <p>I'm originally from Yemen, but I grew up in a fast-moving, multicultural world of Kuala Lumpur, Malaysia — a place that shaped my perspective, resilience, and love for technology. I later moved to Europe to study Computer Science at IU International University, where I built a solid foundation in software development, and problem-solving, from documentation to debugging and optimizing!</p>
+        <p>I started my journey at Simonix Digital Labs, working as a Full-Stack Dev and IT Support intern. There, I got my hands on the move building real websites for clients, organising real servers and fixing it's problems, and seeing how tech actually works behind the scenes — not just in theory. That experience pushed me to level up quickly, balancing development, support, and teamwork all at once.</p>
+        <p>Now that I've graduated, I'm ready to hit the ground running. I'm open to roles in Web Development, PHP Development, Frontend, Backend, Full-Stack, IT Support, or Agile — excited to build, grow, and work while leveling up every day </p>
+    </div>
+  
+  
+    <!-- Beautiful Quote with yellow left border -->
+        <div class="quote-container">
+            <blockquote>"Be The Change That You Wish To See In The World"</blockquote>
+            <cite>— Ghandi</cite>
+        </div>
+    </div>
+    </section>
+    <section id="experience">
+        <div class="container reveal">
+        <h2 class="section-title">Work Experience</h2>
+
+    <!-- Job Entry -->
+    <div class="job">
+        <div class="job-header">
+            <h3 class="job-title">FULLSTACK DEV. & IT SUPPORT INTERN</h3>
+            <span class="job-date">2024 – 2025</span>
+        </div>
+        <div class="job-border-container">
+        <p class="job-company">Simonix Digital Labs</p>
+      <ul class="job-description">
+        <p>At Simonix, I developed and maintained client websites, focusing on web development and SEO optimisation. Focused on user experience across multiple platforms, from web to mobile application. Collaborated closely with stakeholders to ensure that design solutions meet both user needs and business objectives.</p>
+    <!-- Selected Projects -->
+        <h3 class="projects-title">Selected Projects</h3>
+        <div class="projects-grid">
+    <!-- Project 1 -->
+        <a href="https://simonix.my/" target="_blank" class="project-card">
+            <div class="project-image">
+            <img src="assets/Work expereince photo 1.jpeg" alt="Web Development">
+        </div>
+        <div class="project-info">
+            <h4>Web Development</h4>
+            <p>Seamless Frontend Development</p>
+        </div>
+        </a>
+
+    <!-- Project 2 -->
+        <a href="https://simonix.my/" target="_blank" class="project-card">
+            <div class="project-image">
+            <img src="assets/Work experience photo 2.jpeg" alt="SEO Optimization">
+        </div>
+        <div class="project-info">
+            <h4>SEO Optimization</h4>
+            <p>A Boost in Performance Metrics</p>
+        </div>
+        </a>
+    </div>
+    <div class="job-points">
+        <li>Full-Stack developer in a Scrum Agile Environment using PHP, Python, HTML, CSS, Vue.js, Lottie Animations</li>
+        <li>REST API Integration</li>
+        <li>2nd Line IT Support: Tickets, In-Depth Technical Support, Internal Company, Server Troubleshooting, Internal VPN Support</li>
+        <li>ITIL service management skills that resulted in 20% server load reduction</li>
+        <li>CRM experience by collecting Internal Company client data and provide a detailed pattern and user interaction dashboards using Zoho CRM</li>
+        <li>Ensuring data privacy compliance using ISO/IEC 27001</li>
+        </div>
+      </ul>
+      </div>
+      </div>
+  </div>
+</section>
+      
+    <section id="skills">
+  <div class="container reveal">
+    <h2 class="section-title">Skills & Tools</h2>
+
+    <!-- Soft Skills – 2 columns with yellow bullets -->
+    <ul class="soft-skills">
+      <li>Agile Management</li>
+      <li>2nd line IT Support</li>
+      <li>CRM Analysis</li>
+      <li>ISO 27001 Compliance</li>
+      <li>IT Service Management</li>
+      <li>Responsive Web Design</li>
+      <li>Skilled Communication</li>
+    </ul>
+
+    <!-- Tech Logos – exactly 4 per row on desktop -->
+    <div class="tech-logos">
+      <div class="logo-item">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg" alt="PHP">
+        <span>PHP</span>
+      </div>
+      <div class="logo-item">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python">
+        <span>Python</span>
+      </div>
+      <div class="logo-item">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
+        <span>HTML</span>
+      </div>
+      <div class="logo-item">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" alt="CSS">
+        <span>CSS</span>
+      </div>
+      <div class="logo-item">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original-wordmark.svg" alt="MySQL">
+        <span>MySQL</span>
+      </div>
+      <div class="logo-item">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg" alt="Vue.js">
+        <span>Vue.js</span>
+      </div>
+      <div class="logo-item">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" alt="React">
+        <span>React.js</span>
+      </div>
+      <div class="logo-item">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" alt="TypeScript">
+        <span>TypeScript</span>
+      </div>
+    </div>
+
+    <!-- Languages - Fixed Deutsch bar to 85% -->
+    <h3 class="subsection-title">LANGUAGES</h3>
+    <div class="languages">
+      <div class="lang">
+        <span>Deutsch</span>
+        <div class="bar"><div class="fill" style="--target-width: 85%;"></div></div>
+      </div>
+      <div class="lang">
+        <span>English</span>
+        <div class="bar"><div class="fill" style="--target-width: 100%;"></div></div>
+      </div>
+      <div class="lang">
+        <span>Arabic</span>
+        <div class="bar"><div class="fill" style="--target-width: 100%;"></div></div>
+      </div>
+    </div>
+
+    <!-- Education & Certificates – comes right after languages -->
+    <h3 class="subsection-title">EDUCATION & CERTIFICATES</h3>
+    <div class="education">
+      <div class="edu-item">
+        <h4>IU International University of Applied Sciences, Bad-Honnef</h4>
+        <p class="degree">Bachelor of Science in Computer Science — 2025</p>
+        <p class="thesis">Bachelor Thesis: The Impact of Cookie-Consent Banners on Web Performance Metrics and User Engagement.</p>
+      </div>
+      <div class="edu-item">
+        <h4>HELP University, Kuala Lumpur</h4>
+        <p class="degree">Foundation of Arts (IT Pathway) — 2021</p>
+      </div>
+    </div>
+  </div>
+    </section>
+
+
+    <section id="projects">
+  <div class="container reveal">
+    <h2 class="section-title">Projects</h2>
+
+    <!-- Project 1: Airbnb Data Mart -->
+    <div class="project-entry">
+      <div class="project-header">
+        <h3>AIRBNB DATA MART IMPLEMENTATION</h3>
+        <span class="project-year">2024</span>
+      </div>
+
+      <div class="project-content">
+        <div class="project-text">
+          <h4 class="subheading">— About The Project</h4>
+          <p>
+            Implemented a fully normalized, scalable SQL schema for a mock Airbnb platform. Populated all tables with 20+ rows of realistic test data and comprehensive documentation. Focused on building a robust Entity-Relationship Model to simplify complex data relationships.
+          </p>
+
+          <h4 class="subheading">— Achievements</h4>
+          <p>
+            Verified data integrity and performance through rigorous test queries across all relationships. Reinforced the critical importance of junction tables for managing many-to-many relationships effectively. Gained deeper appreciation for foreign key constraints in maintaining referential integrity.
+          </p>
+        </div>
+
+        <a href="assets/AirBNB Project.pdf" target="_blank" class="project-card-link">
+          <div class="project-card-1 airbnb-card">
+            <div class="card-inner">
+              <span class="card-title">Phase 2: Airbnb Data Mart Implementation</span>
+              <p class="card-author">By: Gehad Awadh Yahya Al-Nami<br>Matriculation Nr: 32106098</p>
+              <span class="card-label">AirBNB SQL</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Project 2: Gym Workout Tracker -->
+    <div class="project-entry">
+      <div class="project-header">
+        <h3>GYM WORKOUT TRACKER</h3>
+        <span class="project-year">2023</span>
+      </div>
+
+      <div class="project-content">
+        <div class="project-text">
+          <h4 class="subheading">— About The Project</h4>
+          <p>
+            Developed a statically responsive, full-stack Gym Workout Planner for both mobile and desktop users. Allows users to select pre-saved training splits, track completed exercises via a reactive checklist, and save records. Built using HTML, CSS, and JavaScript with Firebase Firestore handling all user data storage and retrieval.
+          </p>
+
+          <h4 class="subheading">— Achievements</h4>
+          <p>
+            Successfully implemented secure, persistent data storage and retrieval using the Firebase SDK for workout records. Demonstrated proficiency in building a clean, responsive navigation UI that adapts seamlessly to smaller screens. Delivered a complete user experience, featuring workout planning, history review, and data management capabilities.
+          </p>
+        </div>
+
+        <a href="assets/Gym Project.pdf" target="_blank" class="project-card-link">
+          <div class="project-card-1 gym-card">
+            <div class="card-inner">
+              <span class="card-title">Gym Workout Tracker</span>
+              <p class="card-author">Presented by Gehad Awadh Yahya Al-Nami</p>
+              <span class="card-label">Web Application Project</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- FINAL FOOTER – PERFECT HOVER + REAL LINKEDIN LOGO -->
+<footer class="final-footer">
+  <div class="container footer-grid">
+
+    <!-- Row 1: GitHub + Official LinkedIn Logo -->
+    <div class="social-row">
+      <a href="https://github.com/alnamiG" target="_blank" class="footer-icon">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg" alt="GitHub">
+      </a>
+      <a href="https://www.linkedin.com/in/gehad-al-nami/" target="_blank" class="linkedin-btn">
+        <span>in</span>
+      </a>
+    </div>
+
+    <!-- Row 2: Email + Phone (same as Home) -->
+    <div class="contact-row">
+      <a href="mailto:g.alnami@yahoo.com" class="contact-link">
+        <i class="fas fa-envelope"></i>
+        <span>g.alnami@yahoo.com</span>
+      </a>
+      <a href="tel:+49017661976859" class="contact-link">
+        <i class="fas fa-phone-alt"></i>
+        <span>+49 (0) 1766-197-6859</span>
+      </a>
+    </div>
+
+  </div>
+</footer>
+    </main>
+    <!-- Bottom navigation - 100% same as your design -->
+        <nav class="bottom-nav">
+            <div class="nav-active-indicator"></div>
+            <a href="#home" class="active"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="#summary"><i class="fas fa-file-alt"></i><span>Summary</span></a>
+            <a href="#experience"><i class="fas fa-briefcase"></i><span>Experience</span></a>
+            <a href="#skills"><i class="fas fa-bolt"></i><span>Skills</span></a>
+            <a href="#projects"><i class="fas fa-folder-open"></i><span>Projects</span></a>
+        </nav>
+<script>
+  // BLUR ACTIVATES AS SOON AS YOU REACH THE LINKEDIN + LOCATION LINE (in Home section)
+  const homeSection = document.getElementById('home');
+  const contactInfo = document.querySelector('.contact-info'); // this is the line with LinkedIn, phone, etc.
+
+  window.addEventListener('scroll', () => {
+    const contactRect = contactInfo.getBoundingClientRect();
+
+    // Blur turns ON when the LinkedIn/location line reaches about 300px from the top
+    if (contactRect.bottom <= 300) {
+      document.body.classList.add('scrolled');
+    } else {
+      document.body.classList.remove('scrolled');
+    }
+  });
+
+  // Smooth navigation active state
+  const navLinks = document.querySelectorAll('.bottom-nav a');
+  const navIndicator = document.querySelector('.nav-active-indicator');
+  
+  // Initialize the indicator position
+  function updateActiveIndicator() {
+    let current = 'home';
+    document.querySelectorAll('section').forEach(s => {
+      if (s.getBoundingClientRect().top <= 150) current = s.id;
+    });
+    
+    const activeLink = document.querySelector(`.bottom-nav a[href="#${current}"]`);
+    
+    if (activeLink) {
+      const linkRect = activeLink.getBoundingClientRect();
+      const navRect = document.querySelector('.bottom-nav').getBoundingClientRect();
+      
+      // Calculate position relative to the navigation
+      const left = linkRect.left - navRect.left;
+      const width = linkRect.width;
+      
+      // Update indicator position with smooth transition
+      navIndicator.style.width = `${width}px`;
+      navIndicator.style.left = `${left}px`;
+      
+      // Update active class on links
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === `#${current}`);
+      });
+    }
+  }
+
+  // Update indicator on scroll
+  window.addEventListener('scroll', updateActiveIndicator);
+  
+  // Update indicator on window resize
+  window.addEventListener('resize', updateActiveIndicator);
+  
+  // Initialize indicator position
+  updateActiveIndicator();
+
+  // Reveal animation (unchanged)
+  const observer = new IntersectionObserver(e => e.forEach(en => en.isIntersecting && en.target.classList.add('active')), { threshold: 0.2 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  
+</script>
+</body>
+</html>
